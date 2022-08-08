@@ -1,0 +1,120 @@
+#!/usr/bin/env python
+# coding: utf-8
+#FLEX: A Platform for Scalable Service Placement in Multi-Fog and Multi-Cloud Environments
+# # MCD1 Algorithm
+
+# In[1]:
+
+
+import random
+import numpy as np
+
+
+# # Input:
+
+# In[19]:
+
+
+number_provider=10
+number_service=30
+alpha=random.uniform(0,1)
+service=[]
+for i in range(number_service):
+    service.append(i)
+
+
+# # Process
+
+# In[16]:
+
+
+def select_Provider(s,number_provider):
+    alpha=random.uniform(0,1)
+    #P:List of Nodes
+    empty_provider = {
+         #id: number of provider
+        'id': None, 
+         #C:Cost vector for Si
+        'C': None, 
+         #D:delay
+        'D': None,
+         #F 
+        'F': None,
+    } 
+    provider_List=[]
+    for i in range(number_provider):
+        provider_List.append(empty_provider.copy())
+        provider_List[i]['id'] = i
+        #Cij cost of provider Pj for Si
+        provider_List[i]['C'] = random.randint(10, 20)
+        #dij delay of provider Pj for Si
+        provider_List[i]['D'] =random.randint(10, 500)
+    C=[]
+    for i in range(number_provider):
+        C.append(provider_List[i]['C'])
+    Cmax=np.max(C)   
+    D=[]
+    for i in range(number_provider):
+        D.append(provider_List[i]['D'])
+    Dmax=np.max(D)   
+    for i in range(number_provider):
+        provider_List[i]['id'] = i
+        #Cij norm
+        provider_List[i]['C'] = provider_List[i]['C']/Cmax
+        #dij norm
+        provider_List[i]['D'] =provider_List[i]['D']/Dmax
+        #Fij
+        provider_List[i]['F'] =alpha*provider_List[i]['C']+(1-alpha)*provider_List[i]['D']
+    print(provider_List)
+    F=[]
+    for i in range(number_provider):
+        F.append(provider_List[i]['F'])
+
+    Fmin=np.min(F)
+    idex=np.argmin(F)
+    print("Let P%d is the provider with the value of Fmin=%f" %(idex,Fmin))
+    return idex,Fmin
+
+
+# In[29]:
+
+
+set_provider=[]
+set_Fmin=[]
+for i in range(number_service):
+    idex,Fmin=select_Provider(1,number_provider)
+    set_provider.append(idex)
+    set_Fmin.append(Fmin)
+
+
+# # Output
+
+# In[31]:
+
+
+import matplotlib.pyplot as plt
+plt.plot(service,set_provider,color='k', linestyle='dashed', marker='o',
+     markerfacecolor='blue', markersize=12)
+plt.xlabel('service')
+plt.ylabel('set provider')
+plt.title('MCD1 Algorithm')
+plt.show()
+
+
+# In[30]:
+
+
+import matplotlib.pyplot as plt
+plt.plot(service,set_Fmin,color='k', linestyle='dashed', marker='o',
+     markerfacecolor='red', markersize=12)
+plt.xlabel('service')
+plt.ylabel('Fmin')
+plt.title('MCD1 Algorithm')
+plt.show()
+
+
+# In[ ]:
+
+
+
+
